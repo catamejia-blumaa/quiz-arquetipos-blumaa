@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz de Arquetipos de Marca · Blumaa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:    #2642FF;
+    --yellow:  #FFF3C4;
+    --orange:  #FF8231;
+    --pink:    #FF62A1;
+    --pool:    #B6ECFF;
+    --crema:   #FFF7EE;
+    --cafe:    #452925;
+    --dark:    #231F20;
+    --mid:     #6B6460;
+    --muted:   #A09890;
+    --border:  #E4DDD6;
+  }
+
+  body {
+    font-family: 'Arsenal', -apple-system, sans-serif;
+    background: var(--blue);
+    color: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2.5rem 1rem 4rem;
+  }
+
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 680px;
+    width: 100%;
+    padding: 2.75rem 3rem;
+    box-shadow: 0 2px 32px rgba(38,66,255,0.07);
+  }
+
+  /* Brand header */
+  .brand {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-logo-star { width: 28px; height: 28px; flex-shrink: 0; }
+  .brand-wordmark {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--blue);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .brand-divider {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--border);
+    letter-spacing: 0;
+  }
+  .brand-subtext {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .brand-star { color: var(--orange); font-size: 14px; }
+
+  /* Intro star SVG */
+  .intro-star-svg { width: 52px; height: 52px; display: block; margin-bottom: 1.25rem; }
+
+  /* Result star SVG */
+  .result-star-svg { width: 40px; height: 40px; display: block; margin-bottom: 0.75rem; }
+
+  /* Progress */
+  .progress-wrap { height: 4px; background: var(--pool); border-radius: 2px; margin-bottom: 1.75rem; opacity: 0.6; }
+  .progress-bar  { height: 4px; background: var(--blue); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* Question label */
+  .q-label {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Question text */
+  .q-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    line-height: 1.35;
+    margin-bottom: 1.75rem;
+    color: var(--blue);
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--crema);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'Arsenal', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    width: 100%;
+    line-height: 1.4;
+  }
+  .option-btn:hover { background: var(--yellow); border-color: var(--orange); }
+  .option-btn.selected { background: #EEF1FF; border: 2px solid var(--blue); color: #1a2d99; }
+
+  .radio-circle {
+    flex-shrink: 0;
+    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .option-btn.selected .radio-circle { background: var(--blue); border-color: var(--blue); }
+  .checkmark { display: none; width: 5px; height: 10px; border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg) translate(-1px,-2px); }
+  .option-btn.selected .checkmark { display: block; }
+  .option-label { flex: 1; }
+
+  /* Navigation */
+  .nav-row { display: flex; align-items: center; justify-content: flex-end; margin-top: 2rem; gap: 10px; }
+  .hint { font-size: 13px; color: var(--muted); margin-right: auto; font-style: italic; }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--cafe);
+    border: 1.5px solid var(--blue);
+    border-radius: 99px;
+    padding: 12px 28px;
+    font-family: 'Arsenal', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: #FFE88C; transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); border-color: var(--border); cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--mid);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 12px 24px;
+    font-family: 'Arsenal', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--crema); border-color: var(--blue); color: var(--blue); }
+
+  .intro-name-hint {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* Intro screen */
+  .result-star { display: none; } /* reemplazado por SVG */
+  .intro-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--blue);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .intro-sub {
+    font-size: 15px;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+  .brand-input-label {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .brand-input {
+    width: 100%;
+    font-family: 'Instrument Serif', serif;
+    font-size: 19px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--crema);
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .brand-input:focus { border-color: var(--blue); background: #fff; }
+  .brand-input::placeholder { color: var(--muted); font-style: italic; }
+  .intro-tip {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* Sending screen */
+  .sending-overlay { display: none; text-align: center; padding: 4rem 1rem; }
+  .sending-overlay.active { display: block; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--pool);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.25rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sending-text { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--mid); }
+
+
+  .result-hero { width: 100%; height: 260px; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+  .result-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .result-section-header { font-family: 'Roboto Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin: 1.75rem 0 10px; }
+  .result-keywords { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0.25rem; }
+  .result-keyword { background: var(--pool); color: #0d3a5c; font-size: 13px; padding: 5px 14px; border-radius: 99px; font-family: 'Arsenal', sans-serif; }
+  .result-connection { font-size: 15px; color: var(--mid); line-height: 1.65; padding: 16px 20px; background: var(--crema); border-radius: 8px; border-left: 3px solid var(--blue); border-top-left-radius: 0; border-bottom-left-radius: 0; margin-bottom: 0.25rem; }
+
+
+  .result-actions { display: flex; gap: 12px; margin-top: 1.25rem; flex-wrap: wrap; }
+  .result-actions .btn-primary, .result-actions .btn-secondary { flex: 1; min-width: 140px; text-align: center; }
+  .email-status { font-size: 13px; margin-top: 10px; padding: 10px 14px; border-radius: 8px; display: none; font-family: 'Arsenal', sans-serif; }
+  .email-status.ok  { background: #e6f4ea; color: #1a6e35; display: block; }
+  .email-status.err { background: #fdecea; color: #b3261e; display: block; }
+  @media print {
+    body { background: #fff !important; }
+    .screen { display: none !important; }
+    #screen-result { display: block !important; }
+    #saved-banner, .nav-row, .result-actions, .email-status { display: none !important; }
+    .card { box-shadow: none; border: none; max-width: 100%; }
+    .result-hero { height: 200px; }
+  }
+
+  /* Results */
+  .result-star {
+    font-size: 28px;
+    color: var(--orange);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .result-badge {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--cafe);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 5px 14px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .result-archetype {
+    font-family: 'Instrument Serif', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--blue);
+    margin-bottom: 4px;
+    line-height: 1.15;
+  }
+  .result-aka {
+    font-size: 14px;
+    color: var(--orange);
+    margin-bottom: 1.25rem;
+  }
+  .result-tagline {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--pink);
+    border-left: 3px solid var(--pink);
+    padding-left: 14px;
+    margin-bottom: 1.5rem;
+    line-height: 1.35;
+  }
+  .result-desc {
+    font-size: 15px;
+    color: var(--mid);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .result-field {
+    background: var(--crema);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .result-field-label {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .result-field-value { font-size: 14px; color: var(--dark); line-height: 1.4; }
+  .result-field.full { grid-column: 1 / -1; }
+
+  .runner-up {
+    background: var(--crema);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 1.25rem;
+  }
+  .runner-up-label {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .runner-up-name { font-size: 15px; font-weight: 700; color: var(--orange); }
+
+  .score-section { margin-bottom: 1.5rem; }
+  .score-section-label {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 12px;
+  }
+  .score-row-item { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 7px; }
+  .score-name { min-width: 100px; color: var(--mid); }
+  .score-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; }
+  .score-fill { height: 5px; background: var(--blue); border-radius: 3px; }
+  .score-num { min-width: 24px; text-align: right; color: var(--muted); font-size: 12px; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* Saved banner */
+  .saved-banner {
+    background: #f0faf5;
+    border: 1px solid #b6e6d0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .saved-icon { width: 28px; height: 28px; background: #0d6e46; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .saved-icon svg { width: 14px; height: 14px; }
+  .saved-text h4 { font-size: 14px; font-weight: 600; color: #0d6e46; margin-bottom: 2px; }
+  .saved-text p { font-size: 13px; color: var(--mid); }
+  .saved-banner.error { background: #fff5f5; border-color: #fbb; }
+  .saved-banner.error .saved-icon { background: #e24b4a; }
+  .saved-banner.error .saved-text h4 { color: #a32d2d; }
+
+  /* Screen control */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  @media (max-width: 560px) {
+    .container { padding: 1.75rem 1.5rem; }
+    .intro-title { font-size: 26px; }
+    .q-text { font-size: 19px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .result-archetype { font-size: 30px; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="brand">
+    <img class="brand-logo" src="data:image/png;base64,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" alt="Blumaa" style="height:36px; display:block;">
+    <span class="brand-subtext">Quiz de Arquetipos</span>
+  </div>
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <img class="intro-star-svg" src="data:image/png;base64,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" alt="">
+    <div class="intro-title">Toda marca tiene un alma.<br>Vamos a encontrar la tuya.</div>
+    <div class="intro-sub">Las marcas que perduran saben exactamente quiénes son. Eso siempre se descubre. Este quiz te hace 24 preguntas para ayudarte a encontrar esa respuesta. No hay opciones correctas ni incorrectas. Solo hay honestidad. (Y eso, curiosamente, siempre es suficiente.)</div>
+    <span class="brand-input-label">¿Cómo se llama tu marca?</span>
+    <input class="brand-input" id="brand-name-input" type="text" placeholder="ej. Bloom Studio" autocomplete="off"/>
+    <div class="intro-name-hint">Si todavía no tiene nombre, no pasa nada. Puedes usar tu nombre propio, el de tu proyecto, o lo que quieras.</div>
+    <span class="brand-input-label" style="margin-top:1.25rem">¿Cuál es tu correo electrónico?</span>
+    <input class="brand-input" id="email-input" type="email" placeholder="ej. hola@tumarca.com" autocomplete="email"/>
+    <div class="intro-name-hint">Te enviaremos tu resultado para que lo tengas siempre a mano.</div>
+    <div class="intro-tip">Responde como tu marca, no como tú. Piensa en la experiencia que creas para tus clientes.</div>
+    <div class="nav-row">
+      <button class="btn-primary" id="start-btn" disabled onclick="startQuiz()">Empecemos</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div class="q-label" id="q-label">Pregunta 1 de 24</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options-list"></div>
+    <div class="nav-row">
+      <span class="hint" id="hint-text">Elige la que se sienta más verdadera</span>
+      <button class="btn-secondary" id="back-btn" onclick="goBack()" style="display:none">← Atrás</button>
+      <button class="btn-primary" id="next-btn" disabled onclick="goNext()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- SENDING -->
+  <div class="screen" id="screen-sending">
+    <div class="sending-overlay active">
+      <div class="spinner"></div>
+      <div class="sending-text">Analizando tu esencia de marca...</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-result">
+    <div id="saved-banner"></div>
+    <div id="result-card"></div>
+    <div class="result-actions">
+      <button class="btn-primary" onclick="sendResultEmail()">Enviar por correo</button>
+      <button class="btn-secondary" onclick="window.print()">Descargar PDF</button>
+    </div>
+    <div class="email-status" id="email-status"></div>
+    <div class="nav-row" style="margin-top:1rem">
+      <button class="btn-secondary" onclick="restartQuiz()">Empezar de nuevo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// REEMPLAZA ESTA URL con la URL de tu Google Apps Script
+// ============================================================
+var APPS_SCRIPT_URL = 'PEGA_TU_URL_AQUI';
+// ============================================================
+
+var brandName='', userEmail='', currentQ=0, answers=[], topArchetype='', startTime=null;
+var archetypes=['Innocent','Sage','Explorer','Outlaw','Magician','Hero','Lover','Jester','Everyman','Caregiver','Ruler','Creator'];
+
+var archetypeInfo={
+  'Innocent':{
+    aka:'El Idealista, el Optimista, el Entusiasta',
+    tagline:'"Don't worry, be happy."',
+    desire:'Felicidad y la bondad en el mundo',
+    goal:'Ser feliz y hacer que los demás se sientan bien',
+    fear:'Hacer algo malo o equivocarse',
+    weakness:'Puede percibirse como ingenua o alejada de la realidad',
+    motivation:'Felicidad, simplicidad, positividad',
+    gift:'Fe, optimismo genuino',
+    voice:'Simple, honesta, alegre, directa',
+    brands:'Coca-Cola, Dove, Volkswagen',
+    keywords:['Optimista','Pura','Honesta','Simple','Alegre','Confiable','Tranquilizadora'],
+    connection:'Hace que las personas bajen la guardia. En un mundo complicado, su simplicidad y positividad se sienten como un respiro.',
+    avoid:'Cinismo, mensajes que generen ansiedad, complejidad innecesaria, oscuridad',
+    img:'https://images.unsplash.com/photo-1490750967868-88df5691cc9c?w=900&q=80'
+  },
+  'Sage':{
+    aka:'El Pensador, el Experto, el Académico',
+    tagline:'"Knowledge is power."',
+    desire:'Encontrar la verdad y compartirla',
+    goal:'Ayudar a las personas a entender el mundo con más claridad',
+    fear:'La desinformación, el engaño, la ignorancia',
+    weakness:'Puede volverse demasiado académica o difícil de acercar',
+    motivation:'Verdad, conocimiento, curiosidad',
+    gift:'Sabiduría, claridad',
+    voice:'Basada en datos, factual, pedagógica, orientadora',
+    brands:'Google, The Economist, PBS',
+    keywords:['Inteligente','Analítica','Confiable','Experta','Clara','Objetiva','Reflexiva'],
+    connection:'La confianza. Las personas acuden cuando necesitan tomar decisiones importantes y quieren saber que están bien informadas.',
+    avoid:'Simplificación excesiva, afirmaciones sin sustento, populismo, imprecisión',
+    img:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'
+  },
+  'Explorer':{
+    aka:'El Aventurero, el Buscador, el Pionero',
+    tagline:'"Don't fence me in."',
+    desire:'Libertad de descubrir quién soy a través de lo que vivo',
+    goal:'Explorar el mundo y vivir de forma auténtica, sin límites',
+    fear:'El estancamiento, la conformidad, el aburrimiento',
+    weakness:'Puede parecer errática o sin dirección clara',
+    motivation:'Libertad, aventura, autenticidad',
+    gift:'Autonomía, curiosidad, ambición',
+    voice:'Auténtica, directa, inspiradora, sin filtros',
+    brands:'Patagonia, REI, Jeep, National Geographic',
+    keywords:['Audaz','Curiosa','Independiente','Auténtica','Aventurera','Libre','Apasionada'],
+    connection:'Habla directamente al instinto de las personas de querer más. Valida su inquietud y les da permiso de ir a buscarlo.',
+    avoid:'Rigidez, mensajes sobre rutina, convenciones, lo establecido, lo predecible',
+    img:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'
+  },
+  'Outlaw':{
+    aka:'El Rebelde, el Revolucionario, el Transgresor',
+    tagline:'"Rules are meant to be broken."',
+    desire:'Cambiar lo que no funciona, con o sin permiso',
+    goal:'Romper las reglas y liberar a otros del status quo',
+    fear:'La impotencia, ser irrelevante, conformarse',
+    weakness:'Puede alienar a audiencias más conservadoras',
+    motivation:'Revolución, libertad, autenticidad radical',
+    gift:'Atrevimiento, honestidad sin filtros',
+    voice:'Directa, provocadora, sin censura, honesta hasta el hueso',
+    brands:'Harley-Davidson, Virgin, Diesel',
+    keywords:['Rebelde','Atrevida','Honesta','Provocadora','Valiente','Disruptiva','Sin filtros'],
+    connection:'Le da a las personas algo que pocas marcas ofrecen: permiso. Permiso para cuestionar lo establecido y hacer las cosas a su manera.',
+    avoid:'Mensajes corporativos, lenguaje formal, la complacencia, los clichés del sector',
+    img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80'
+  },
+  'Magician':{
+    aka:'El Visionario, el Catalizador, el Transformador',
+    tagline:'"I make things happen."',
+    desire:'Conocer las leyes del universo y usarlas para transformar',
+    goal:'Hacer que los sueños se vuelvan realidad',
+    fear:'Las consecuencias negativas imprevistas, la ilusión sin sustancia',
+    weakness:'Puede percibirse como poco realista o difícil de creer',
+    motivation:'Transformación, visión, magia',
+    gift:'Carisma, intuición, poder de convicción',
+    voice:'Visionaria, evocadora, inspiradora, cargada de posibilidad',
+    brands:'Disney, Apple, TED',
+    keywords:['Visionaria','Carismática','Intuitiva','Transformadora','Inspiradora','Misteriosa','Poderosa'],
+    connection:'Las personas quieren creer que las cosas pueden cambiar. Esta marca les da esa convicción y los hace sentir parte de la transformación.',
+    avoid:'Promesas vacías, el exceso de lógica, lo predecible, lo ordinario',
+    img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=900&q=80'
+  },
+  'Hero':{
+    aka:'El Campeón, el Guerrero, el Triunfador',
+    tagline:'"Where there's a will, there's a way."',
+    desire:'Demostrar su valía a través del coraje y la determinación',
+    goal:'Hacer del mundo un lugar mejor, inspirar a otros a superarse',
+    fear:'La debilidad, la cobardía, no estar a la altura',
+    weakness:'Puede percibirse como arrogante o exigente en exceso',
+    motivation:'Superación, reto, impacto',
+    gift:'Coraje, determinación, inspiración',
+    voice:'Motivadora, directa, enérgica, sin rodeos',
+    brands:'Nike, Adidas, Cruz Roja',
+    keywords:['Valiente','Determinada','Competitiva','Honesta','Inspiradora','Fuerte','Comprometida'],
+    connection:'Apela al deseo de las personas de ser su mejor versión. Cada interacción se siente como un recordatorio de que son capaces de más.',
+    avoid:'La mediocridad, los mensajes pasivos, el exceso de comodidad, rendirse',
+    img:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=80'
+  },
+  'Lover':{
+    aka:'El Amante, el Íntimo, el Seductor',
+    tagline:'"All you need is love."',
+    desire:'Intimidad y conexión genuina con las personas',
+    goal:'Crear relaciones basadas en la emoción, la belleza y el deseo',
+    fear:'Ser rechazada, no ser amada, pasar desapercibida',
+    weakness:'Puede percibirse como superficial o demasiado estética',
+    motivation:'Amor, intimidad, belleza, conexión',
+    gift:'Pasión, calidez, magnetismo',
+    voice:'Íntima, evocadora, poética, cargada de emoción',
+    brands:'Tiffany, Chanel, Godiva',
+    keywords:['Sensual','Cálida','Apasionada','Íntima','Elegante','Emotiva','Magnética'],
+    connection:'Hace que las personas se sientan deseadas y vistas. Esa sensación de ser reconocido es difícil de replicar y más difícil aún de olvidar.',
+    avoid:'Frialdad, distancia, mensajes funcionales sin carga emocional, lo genérico',
+    img:'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=900&q=80'
+  },
+  'Jester':{
+    aka:'El Comediante, el Animador, el Travieso',
+    tagline:'"You only live once."',
+    desire:'Vivir el momento y pasarla bien',
+    goal:'Traer alegría y recordarle a las personas que la vida puede ser ligera',
+    fear:'El aburrimiento, lo serio en exceso, ser ignorado',
+    weakness:'Puede parecer poco seria o difícil de tomar como referente',
+    motivation:'Diversión, espontaneidad, el presente',
+    gift:'Alegría, creatividad, conexión inmediata',
+    voice:'Juguetona, ingeniosa, inesperada, siempre sorpresiva',
+    brands:'Old Spice, M&Ms, Ben & Jerry's',
+    keywords:['Divertida','Espontánea','Creativa','Ligera','Irreverente','Cercana','Inesperada'],
+    connection:'En un mundo solemne, esta marca es un respiro. Las personas vuelven porque los hace sentir bien, y eso de por sí es poderoso.',
+    avoid:'La seriedad excesiva, el tono corporativo, mensajes pesados, el miedo a lo absurdo',
+    img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=900&q=80'
+  },
+  'Everyman':{
+    aka:'El Chico de al Lado, el Ciudadano, el Realista',
+    tagline:'"All men and women are created equal."',
+    desire:'Pertenecer, conectar con otros, ser parte de algo',
+    goal:'Crear comunidad y ser accesible para todos',
+    fear:'Destacar de la manera equivocada, parecer pretenciosa o exclusiva',
+    weakness:'Puede perderse entre la multitud por no diferenciarse lo suficiente',
+    motivation:'Pertenencia, comunidad, autenticidad',
+    gift:'Confianza, inclusión, calidez genuina',
+    voice:'Casual, directa, sin pretensiones, como un amigo de confianza',
+    brands:'IKEA, Target, Levi's',
+    keywords:['Accesible','Honesta','Amigable','Real','Inclusiva','Sin pretensiones','Confiable'],
+    connection:'No intenta impresionar. Y precisamente eso es lo que la hace tan confiable. Las personas se sienten cómodas porque no las hace sentir menos.',
+    avoid:'El elitismo, el lujo ostentoso, el lenguaje técnico, la exclusividad',
+    img:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&q=80'
+  },
+  'Caregiver':{
+    aka:'El Cuidador, el Protector, el Sanador',
+    tagline:'"Love your neighbour as yourself."',
+    desire:'Proteger y cuidar a los demás',
+    goal:'Hacer que las personas se sientan seguras, cuidadas y en buenas manos',
+    fear:'El egoísmo, la indiferencia, causar daño a otros',
+    weakness:'Puede percibirse como condescendiente o atraer a quienes abusan de su generosidad',
+    motivation:'Servicio, protección, generosidad',
+    gift:'Empatía, confianza, calidez genuina',
+    voice:'Cálida, empática, cercana, siempre orientada al otro',
+    brands:'Johnson & Johnson, UNICEF, Volvo',
+    keywords:['Empática','Generosa','Cálida','Atenta','Protectora','Confiable','Servicial'],
+    connection:'Las personas se sienten contenidas. Saben que esta marca se preocupa de verdad y eso se nota en cada detalle, en cada interacción.',
+    avoid:'La frialdad, la impersonalidad, los procesos automatizados, la indiferencia',
+    img:'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=900&q=80'
+  },
+  'Ruler':{
+    aka:'El Líder, el Jefe, la Autoridad',
+    tagline:'"Power isn't everything. It's the only thing."',
+    desire:'Control, orden y prosperidad',
+    goal:'Crear excelencia y establecer el estándar que otros siguen',
+    fear:'El caos, perder el control, la mediocridad',
+    weakness:'Puede percibirse como rígida, distante o demasiado formal',
+    motivation:'Poder, excelencia, control',
+    gift:'Liderazgo, responsabilidad, refinamiento',
+    voice:'Segura, directa, refinada, siempre con autoridad',
+    brands:'Rolex, Mercedes-Benz, American Express',
+    keywords:['Segura','Autoritaria','Elegante','Sofisticada','Exigente','Exclusiva','Líder'],
+    connection:'Las personas acuden cuando quieren lo mejor. Esta marca les confirma que lo merecen y cumple esa promesa cada vez.',
+    avoid:'Lo ordinario, lo accesible en exceso, los errores visibles, la inconsistencia',
+    img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80'
+  },
+  'Creator':{
+    aka:'El Artista, el Innovador, el Visionario',
+    tagline:'"If it can be imagined, it can be created."',
+    desire:'Crear algo de valor duradero, dar forma a una visión',
+    goal:'Dar vida a algo extraordinario e inspirar a otros a hacer lo mismo',
+    fear:'La mediocridad, replicar lo que ya existe, la visión sin ejecución',
+    weakness:'Puede volverse perfeccionista o difícil de escalar',
+    motivation:'Originalidad, expresión, innovación',
+    gift:'Creatividad, visión, capacidad de inspirar',
+    voice:'Original, expresiva, detallista, apasionada por el oficio',
+    brands:'Adobe, LEGO, Apple',
+    keywords:['Original','Expresiva','Imaginativa','Ambiciosa','Perfeccionista','Innovadora','Valiente'],
+    connection:'Inspira el instinto creativo de las personas. Las hace sentir que también ellas pueden hacer algo que no existía antes.',
+    avoid:'Lo genérico, las tendencias vacías, copiar a otros, la producción sin propósito',
+    img:'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=900&q=80'
+  }
+};
+
+var questions=[
+  {
+    text:function(b){return 'Cuando alguien te pregunta "¿qué hace '+b+'?", ¿qué le dirías?'},
+    options:[
+      {text:'Hacer que la gente se sienta bien. Que todo sea un poco más simple y más luminoso.',a:['Innocent']},
+      {text:'Darle a las personas el conocimiento que necesitan para tomar mejores decisiones.',a:['Sage']},
+      {text:'Empujar a las personas a crecer y convertirse en su mejor versión.',a:['Hero']},
+      {text:'Crear cosas tan originales que no podrían venir de nadie más.',a:['Creator']}
+    ]
+  },
+  {
+    text:function(b){return 'Imagina a alguien que acaba de tener su primera experiencia con '+b+'. ¿Cómo quieres que se sienta?'},
+    options:[
+      {text:'Cálido y cuidado. Como si alguien de verdad lo entendiera.',a:['Caregiver','Innocent']},
+      {text:'Emocionado e inspirado. Como si se le acabara de abrir un mundo nuevo.',a:['Explorer','Magician']},
+      {text:'Más inteligente y seguro. Como si acabara de subir de nivel.',a:['Sage']},
+      {text:'Lleno de energía y con ganas de más. Como si acabara de pasarla muy bien.',a:['Jester']}
+    ]
+  },
+  {
+    text:function(b){return b+' llega a una fiesta. ¿A cuál de estos invitados se parece?'},
+    options:[
+      {text:'Al que hace que todos se sientan incluidos y cómodos desde el primer momento.',a:['Everyman','Caregiver']},
+      {text:'Al que tiene a todos a su alrededor, escuchando cada palabra que dice.',a:['Sage','Magician']},
+      {text:'Al que tiene a todos muertos de la risa con sus historias.',a:['Jester']},
+      {text:'Al que acaba de volver de algún lugar increíble y no puede esperar para contarlo.',a:['Explorer','Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return 'Cuando '+b+' está en su mejor momento, ¿qué le da a las personas que difícilmente van a encontrar en otro lugar?'},
+    options:[
+      {text:'Una sensación real de pertenencia. Sienten que son parte de algo.',a:['Everyman']},
+      {text:'El valor para hacer cosas que antes no se atrevían a intentar.',a:['Hero','Outlaw']},
+      {text:'La sensación de ser verdaderamente queridos, vistos y apreciados.',a:['Lover']},
+      {text:'La convicción de que las cosas de verdad pueden cambiar para bien.',a:['Magician','Innocent']}
+    ]
+  },
+  {
+    text:function(b){return 'Lee estas frases. ¿Cuál suena más a '+b+'?'},
+    options:[
+      {text:'"Hacemos que el día a día sea un poco más luminoso."',a:['Innocent','Jester']},
+      {text:'"Ayudamos a las personas a entender el mundo con más claridad."',a:['Sage']},
+      {text:'"Te acompañamos a convertirte en quien estás destinado a ser."',a:['Hero','Magician']},
+      {text:'"Venimos a cambiar las reglas. Y a hacer las cosas diferente."',a:['Outlaw','Creator']}
+    ]
+  },
+  {
+    text:function(b){return 'Más frases. ¿Con cuál se identifica más '+b+'?'},
+    options:[
+      {text:'"Porque todos merecen sentirse cuidados."',a:['Caregiver']},
+      {text:'"Te llevamos a donde nunca has estado."',a:['Explorer']},
+      {text:'"Para los que solo quieren algo real."',a:['Everyman']},
+      {text:'"Ponemos el estándar que otros siguen."',a:['Ruler']}
+    ]
+  },
+  {
+    text:function(b){return 'Un cliente fiel le habla de '+b+' a un amigo. ¿Qué está diciendo?'},
+    options:[
+      {text:'"De verdad saben lo que hacen. Les tengo una confianza total."',a:['Sage']},
+      {text:'"Siempre me hacen sentir bien. Cada vez que los uso."',a:['Innocent','Jester']},
+      {text:'"Se nota que les importa. Se siente en todo lo que hacen."',a:['Caregiver']},
+      {text:'"No hay nada igual en el mercado. Es completamente original."',a:['Creator','Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return 'Otro cliente fiel. Otra conversación. ¿Qué más podrían estar diciendo de '+b+'?'},
+    options:[
+      {text:'"Me empujó a hacer cosas que nunca pensé que podría."',a:['Hero','Explorer']},
+      {text:'"Siento que fue hecho justo para personas como yo."',a:['Everyman','Lover']},
+      {text:'"Es una experiencia premium. La diferencia se nota de inmediato."',a:['Ruler']},
+      {text:'"Hay algo en esto que se siente mágico. No sé cómo explicarlo."',a:['Magician']}
+    ]
+  },
+  {
+    text:function(b){return '¿Qué definitivamente no es '+b+'?'},
+    options:[
+      {text:'"Aburrida y predecible."',a:['Explorer','Outlaw','Creator']},
+      {text:'"Fría y corporativa."',a:['Caregiver','Innocent','Everyman']},
+      {text:'"Puro marketing, sin sustancia."',a:['Sage','Hero']},
+      {text:'"Del montón y olvidable."',a:['Ruler','Magician','Lover']}
+    ]
+  },
+  {
+    text:function(b){return 'Cuando '+b+' habla, ¿cómo suena? Elige el estilo que más se le parece.'},
+    options:[
+      {text:'Cálido y cercano. Como un mensaje de alguien que de verdad se preocupa por ti.',a:['Caregiver','Innocent','Everyman']},
+      {text:'Inteligente y claro. Primero los datos, sin relleno, siempre aprendes algo.',a:['Sage']},
+      {text:'Directo y contundente. Frases cortas, mucha energía, te dan ganas de actuar.',a:['Hero','Outlaw']},
+      {text:'Juguetón e ingenioso. Siempre un poco inesperado, te saca una sonrisa.',a:['Jester','Creator']}
+    ]
+  },
+  {
+    text:function(b){return 'Una segunda mirada. ¿Cuál de estas otras formas de hablar también podría ser '+b+'?'},
+    options:[
+      {text:'Rico y poético. Palabras elegidas con cuidado, cada línea se siente intencional.',a:['Lover','Creator']},
+      {text:'Inspirador y visionario. Habla de grandes ideas y de lo que podría ser posible.',a:['Magician','Explorer']},
+      {text:'Seguro y con autoridad. El tono de alguien que claramente sabe lo que hace.',a:['Ruler']},
+      {text:'Real y con los pies en la tierra. Sin palabras rebuscadas, solo honesto y directo.',a:['Everyman','Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return 'Alguien está eligiendo entre '+b+' y otra opción. ¿Cuál es la razón real por la que elige '+b+'?'},
+    options:[
+      {text:'Confían más. Se siente honesto y confiable.',a:['Sage','Everyman']},
+      {text:'Les hace sentir algo que los otros no logran.',a:['Lover','Magician','Innocent']},
+      {text:'Los empuja más fuerte y espera más de ellos.',a:['Hero']},
+      {text:'Se siente diferente. Más fresco, más atrevido, más vivo.',a:['Creator','Outlaw','Explorer']}
+    ]
+  },
+  {
+    text:function(b){return 'Describe el look and feel de '+b+' en cuatro palabras. ¿Cuál grupo encaja mejor?'},
+    options:[
+      {text:'Suave, cálido, delicado, seguro.',a:['Innocent','Caregiver']},
+      {text:'Atrevido, fuerte, activo, preciso.',a:['Hero','Explorer']},
+      {text:'Lujoso, refinado, pulido, elegante.',a:['Ruler','Lover']},
+      {text:'Juguetón, brillante, colorido, divertido.',a:['Jester']}
+    ]
+  },
+  {
+    text:function(b){return 'Otra vuelta visual. ¿Cuál de estos grupos también podría ser '+b+'?'},
+    options:[
+      {text:'Crudo, audaz, real, sin filtros.',a:['Outlaw']},
+      {text:'Minimalista, limpio, honesto, sin pretensiones.',a:['Everyman','Sage']},
+      {text:'Original, artístico, expresivo, único.',a:['Creator']},
+      {text:'Mágico, cinematográfico, onírico, envolvente.',a:['Magician']}
+    ]
+  },
+  {
+    text:function(b){return 'Piensa en lo que vende '+b+'. ¿Por qué pagan de verdad las personas?'},
+    options:[
+      {text:'Tranquilidad. El alivio de saber que están en buenas manos.',a:['Caregiver','Innocent']},
+      {text:'Un atajo para ser más inteligente o estar mejor informado.',a:['Sage']},
+      {text:'La emoción de algo nuevo, una experiencia fresca o una aventura.',a:['Explorer']},
+      {text:'Algo que les ayuda a destacar y expresar quiénes son.',a:['Creator','Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return '¿Qué otra cosa están comprando, en el fondo, cuando eligen '+b+'?'},
+    options:[
+      {text:'Una transformación real. Quieren salir del otro lado siendo diferentes.',a:['Magician','Hero']},
+      {text:'Alegría pura. Solo quieren sonreír y sentirse bien.',a:['Jester','Innocent']},
+      {text:'Estatus y calidad. Quieren lo mejor y lo saben.',a:['Ruler']},
+      {text:'Conexión. Quieren sentir que alguien los entiende de verdad.',a:['Lover','Everyman']}
+    ]
+  },
+  {
+    text:function(b){return b+' está a punto de lanzar algo nuevo. ¿Qué pregunta guía esa decisión?'},
+    options:[
+      {text:'"¿Esto hará la vida de nuestros clientes más simple y más alegre?"',a:['Innocent','Caregiver']},
+      {text:'"¿Es esto lo más preciso y confiable que podemos ofrecer?"',a:['Sage']},
+      {text:'"¿Esto lleva a las personas más lejos de lo que han llegado antes?"',a:['Hero','Explorer']},
+      {text:'"¿Alguien ha hecho algo remotamente parecido a esto antes?"',a:['Creator','Outlaw','Magician']}
+    ]
+  },
+  {
+    text:function(b){return b+' lanza una campaña. ¿Cuál de estos mensajes encaja más con '+b+'?'},
+    options:[
+      {text:'"La vida está bien. Aquí tu recordatorio para que la disfrutes."',a:['Innocent','Jester']},
+      {text:'"Esto es lo que la mayoría no sabe, pero tú deberías saber."',a:['Sage']},
+      {text:'"Eres más fuerte de lo que crees. Demuéstralo."',a:['Hero']},
+      {text:'"Las reglas las hicieron otros. Tú no tienes que seguirlas."',a:['Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return 'Otra campaña. Otro mensaje posible. ¿Cuál suena más a '+b+'?'},
+    options:[
+      {text:'"Imagina cómo podría verse tu vida. Ahora vamos a construirla."',a:['Magician']},
+      {text:'"Hecho para personas reales. Sin pretensiones, sin relleno."',a:['Everyman']},
+      {text:'"Porque mereces sentirte cuidado."',a:['Caregiver']},
+      {text:'"Ve a donde nunca has ido. Aquí te mostramos el camino."',a:['Explorer']}
+    ]
+  },
+  {
+    text:function(b){return '¿Qué resultado haría que el equipo detrás de '+b+' se sintiera genuinamente orgulloso?'},
+    options:[
+      {text:'Ver que los clientes vuelven una y otra vez con una gran sonrisa.',a:['Innocent','Jester','Caregiver']},
+      {text:'Ser reconocido como el nombre más confiable y creíble del sector.',a:['Sage','Ruler']},
+      {text:'Que un cliente diga "esta marca cambió mi vida".',a:['Magician','Hero']},
+      {text:'Crear algo tan original que los competidores no puedan copiarlo.',a:['Creator']}
+    ]
+  },
+  {
+    text:function(b){return 'Imagina '+b+' en 5 años. ¿Cómo se ve el éxito?'},
+    options:[
+      {text:'Millones de personas que se sienten un poco más felices gracias a nosotros.',a:['Innocent','Caregiver','Jester']},
+      {text:'Ser la referencia definitiva en la que todos confían.',a:['Sage','Ruler']},
+      {text:'Haber encendido un movimiento o cambiado cómo funciona una industria.',a:['Outlaw','Magician','Explorer']},
+      {text:'Un legado de trabajo tan bueno que se sigue mencionando y admirando.',a:['Creator','Hero']}
+    ]
+  },
+  {
+    text:function(b){return '¿Cuál de estas marcas se siente como una prima cercana de '+b+'?'},
+    options:[
+      {text:'Coca-Cola o Dove: cálidas, optimistas, que hacen sentir bien.',a:['Innocent','Caregiver']},
+      {text:'Nike o Cruz Roja: con propósito claro, que empoderan.',a:['Hero']},
+      {text:'Google o The Economist: inteligentes, informativas, confiables.',a:['Sage']},
+      {text:'Harley-Davidson o Virgin: atrevidas, rebeldes, que rompen las reglas.',a:['Outlaw']}
+    ]
+  },
+  {
+    text:function(b){return '¿Y cuál de estas otras también podría serlo?'},
+    options:[
+      {text:'Disney o TED: visionarias, inspiradoras, transformadoras.',a:['Magician']},
+      {text:'IKEA o Target: amigables, accesibles, sin pretensiones.',a:['Everyman']},
+      {text:'Tiffany o Godiva: hermosas, sensuales, íntimas.',a:['Lover']},
+      {text:'LEGO o Adobe: originales, creativas, expresivas.',a:['Creator']}
+    ]
+  },
+  {
+    text:function(b){return 'Última pregunta. Si '+b+' fuera una persona, ¿qué diría la gente siempre de ella?'},
+    options:[
+      {text:'"Siempre sabe cómo hacerte sentir mejor."',a:['Caregiver','Innocent']},
+      {text:'"Te desafía y te hace querer ser mejor."',a:['Hero','Sage']},
+      {text:'"Es divertida de tener cerca. Hace todo más disfrutable."',a:['Jester','Everyman']},
+      {text:'"Es única. Literalmente no hay nadie más como ella."',a:['Creator','Outlaw','Magician']}
+    ]
+  }
+];
+
+var descMap={
+  'Innocent':function(b){return b+' tiene el don más difícil de sostener: hace que la vida se sienta bien. Con la habilidad de encontrar lo luminoso incluso dentro de la complejidad. Eso es contagioso. Y la gente vuelve por eso.'},
+  'Sage':function(b){return b+' es la voz a la que acudes cuando quieres entender algo de verdad. La verdad completa, sin atajos. Construye confianza siendo consistentemente honesta, precisa y útil. Y en un mundo lleno de ruido, eso vale mucho.'},
+  'Explorer':function(b){return b+' vive en el filo entre lo conocido y lo desconocido. Le habla a esa parte de las personas que sabe que hay más, que todavía quiere descubrir, que nunca va a conformarse con lo ordinario.'},
+  'Outlaw':function(b){return b+' llegó a romper las reglas. A propósito. Le da a su audiencia algo valioso: permiso. Permiso para cuestionar lo establecido, para hacer las cosas a su manera, para salirse del guión que alguien más escribió.'},
+  'Magician':function(b){return b+' hace que las personas crean en lo que todavía no pueden ver. No solo vende: crea momentos que se sienten genuinamente transformadores. La gente sale distinta de como entró.'},
+  'Hero':function(b){return b+' empuja a las personas a ser su mejor versión. No desde la comodidad, sino desde el reto. Cada interacción se siente como una invitación a levantarse, intentarlo más fuerte y demostrar de qué están hechas.'},
+  'Lover':function(b){return b+' se construye sobre la conexión. Hace que las personas se sientan vistas, deseadas y profundamente comprendidas. Esa sensación de ser reconocido es difícil de resistir. Más difícil aún de olvidar.'},
+  'Jester':function(b){return b+' trae la diversión. Le recuerda a las personas que la vida no tiene que ser tan seria, tan pesada, tan llena de urgencia. Y vuelven, siempre, porque los hace sentir bien.'},
+  'Everyman':function(b){return b+' es para todos. Y lo sabe. Nunca intenta demasiado, nunca mira a nadie de arriba abajo. Se gana la lealtad siendo exactamente lo que dice ser: real.'},
+  'Caregiver':function(b){return b+' cuida de verdad. Y las personas lo sienten en cada detalle, en cada interacción, en cada momento en que podrías haber hecho menos y elegiste hacer más. Esa generosidad es lo que hace que sus clientes sean tan fieles.'},
+  'Ruler':function(b){return b+' establece el estándar. Las personas acuden a él porque quieren lo mejor, y '+b+' cumple esa promesa cada vez. Lo hace a propósito. Siempre.'},
+  'Creator':function(b){return b+' está impulsada por la originalidad. Va adelante de las tendencias, nunca detrás. Crea cosas que todavía no existían. E inspira a su audiencia a atreverse a hacer lo mismo.'}
+};
+
+function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function updateStartBtn(){
+  var name=document.getElementById('brand-name-input').value.trim();
+  var email=document.getElementById('email-input').value.trim();
+  document.getElementById('start-btn').disabled=name.length<2||!isValidEmail(email);
+}
+document.getElementById('brand-name-input').addEventListener('input',updateStartBtn);
+document.getElementById('email-input').addEventListener('input',updateStartBtn);
+document.getElementById('brand-name-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter')document.getElementById('email-input').focus();
+});
+document.getElementById('email-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!document.getElementById('start-btn').disabled)startQuiz();
+});
+
+function startQuiz(){
+  brandName=document.getElementById('brand-name-input').value.trim();
+  userEmail=document.getElementById('email-input').value.trim();
+  answers=new Array(questions.length).fill(null);
+  currentQ=0; startTime=new Date();
+  showScreen('screen-quiz'); renderQuestion();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQuestion(){
+  var q=questions[currentQ];
+  document.getElementById('q-label').textContent='Pregunta '+(currentQ+1)+' de '+questions.length;
+  document.getElementById('q-text').textContent=q.text(brandName);
+  document.getElementById('progress-bar').style.width=(currentQ/questions.length*100)+'%';
+  var list=document.getElementById('options-list'); list.innerHTML='';
+  q.options.forEach(function(opt,i){
+    var btn=document.createElement('button');
+    btn.className='option-btn'+(answers[currentQ]===i?' selected':'');
+    btn.innerHTML='<span class="radio-circle"><span class="checkmark"></span></span><span class="option-label">'+opt.text+'</span>';
+    btn.onclick=function(){selectOption(i);};
+    list.appendChild(btn);
+  });
+  var hasAnswer=answers[currentQ]!==null;
+  var nextBtn=document.getElementById('next-btn');
+  nextBtn.disabled=!hasAnswer;
+  nextBtn.textContent=currentQ===questions.length-1?'Ver mis resultados ✦':'Siguiente →';
+  document.getElementById('back-btn').style.display=currentQ===0?'none':'';
+  document.getElementById('hint-text').textContent=hasAnswer?'':'Elige la que se sienta más verdadera';
+}
+
+function selectOption(i){
+  answers[currentQ]=i;
+  document.querySelectorAll('.option-btn').forEach(function(btn,idx){
+    btn.className='option-btn'+(idx===i?' selected':'');
+  });
+  document.getElementById('next-btn').disabled=false;
+  document.getElementById('hint-text').textContent='';
+}
+
+function goNext(){
+  if(answers[currentQ]===null)return;
+  if(currentQ<questions.length-1){currentQ++;renderQuestion();}
+  else computeAndSend();
+}
+
+function goBack(){if(currentQ>0){currentQ--;renderQuestion();}}
+
+function computeAndSend(){
+  var scores={};
+  archetypes.forEach(function(a){scores[a]=0;});
+  questions.forEach(function(q,qi){
+    if(answers[qi]!==null){
+      var sel=q.options[answers[qi]];
+      var w=1/sel.a.length;
+      sel.a.forEach(function(a){scores[a]+=w;});
+    }
+  });
+  var sorted=archetypes.slice().sort(function(a,b){return scores[b]-scores[a];});
+  topArchetype=sorted[0];
+  var runnerUp=sorted[1];
+  var minutesTaken=Math.round((new Date()-startTime)/60000);
+  var payload={
+    timestamp: new Date().toLocaleString('es-ES'),
+    brandName: brandName,
+    primaryArchetype: topArchetype,
+    secondaryArchetype: runnerUp,
+    scorePrimary: Math.round(scores[sorted[0]]*10),
+    scoreSecondary: Math.round(scores[sorted[1]]*10),
+    scores: {},
+    timeTaken: minutesTaken+' min'
+  };
+  archetypes.forEach(function(a){ payload.scores[a]=Math.round(scores[a]*10); });
+  showScreen('screen-sending');
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(){ showResults(sorted, scores, true); })
+  .catch(function(){ showResults(sorted, scores, false); });
+}
+
+function showResults(sorted, scores, saved){
+  var info=archetypeInfo[topArchetype];
+  var runnerUp=sorted[1];
+  var maxScore=scores[sorted[0]];
+  var bannerHtml='';
+  if(saved){
+    bannerHtml='<div class="saved-banner"><div class="saved-icon"><svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="saved-text"><h4>Resultados guardados</h4><p>Tu arquetipo ha quedado registrado en el sistema de Blumaa.</p></div></div>';
+  } else {
+    bannerHtml='<div class="saved-banner error"><div class="saved-icon"><svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3v4M6 9v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="saved-text"><h4>No se pudo guardar automáticamente</h4><p>Comparte tu resultado con tu contacto de Blumaa: arquetipo <strong>'+topArchetype+'</strong> para <strong>'+brandName+'</strong>.</p></div></div>';
+  }
+  var scoreRowsHtml=sorted.map(function(a){
+    return '<div class="score-row-item"><span class="score-name">The '+a+'</span><span class="score-track"><span class="score-fill" style="width:'+Math.round((scores[a]/maxScore)*100)+'%"></span></span><span class="score-num">'+Math.round(scores[a]*10)+'</span></div>';
+  }).join('');
+  var keywordsHtml=info.keywords.map(function(k){return '<span class="result-keyword">'+k+'</span>';}).join('');
+  document.getElementById('saved-banner').innerHTML=bannerHtml;
+  var starSvg='<img class="result-star-svg" src="data:image/png;base64,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" alt="">';
+  document.getElementById('result-card').innerHTML=
+    '<div class="result-hero"><img src="'+info.img+'" alt="'+topArchetype+'" loading="lazy"></div>'+
+    starSvg+
+    '<div class="result-badge">Tu arquetipo de marca</div>'+
+    '<div class="result-archetype">The '+topArchetype+'</div>'+
+    '<div class="result-aka">'+info.aka+'</div>'+
+    '<div class="result-tagline">'+info.tagline+'</div>'+
+    '<div class="result-desc">'+descMap[topArchetype](brandName)+'</div>'+
+    '<div class="result-section-header">La personalidad de tu marca</div>'+
+    '<div class="result-keywords">'+keywordsHtml+'</div>'+
+    '<div class="result-section-header">La psicología detrás</div>'+
+    '<div class="result-grid">'+
+      '<div class="result-field"><div class="result-field-label">Deseo central</div><div class="result-field-value">'+info.desire+'</div></div>'+
+      '<div class="result-field"><div class="result-field-label">Objetivo</div><div class="result-field-value">'+info.goal+'</div></div>'+
+      '<div class="result-field"><div class="result-field-label">Mayor temor</div><div class="result-field-value">'+info.fear+'</div></div>'+
+      '<div class="result-field"><div class="result-field-label">Debilidad</div><div class="result-field-value">'+info.weakness+'</div></div>'+
+    '</div>'+
+    '<div class="result-section-header">Cómo conecta con su audiencia</div>'+
+    '<div class="result-connection">'+info.connection+'</div>'+
+    '<div class="result-section-header">Voz, tono y referencias</div>'+
+    '<div class="result-grid">'+
+      '<div class="result-field full"><div class="result-field-label">Estilo de comunicación</div><div class="result-field-value">'+info.voice+'</div></div>'+
+      '<div class="result-field full"><div class="result-field-label">Qué evitar</div><div class="result-field-value">'+info.avoid+'</div></div>'+
+      '<div class="result-field full"><div class="result-field-label">Marcas con este arquetipo</div><div class="result-field-value">'+info.brands+'</div></div>'+
+    '</div>'+
+    '<div class="runner-up"><div class="runner-up-label">Tu arquetipo secundario</div><div class="runner-up-name">The '+runnerUp+' &mdash; '+archetypeInfo[runnerUp].aka+'</div></div>'+
+    '<div class="divider"></div>'+
+    '<div class="score-section"><div class="score-section-label">Cómo puntuaste en los 12 arquetipos</div>'+scoreRowsHtml+'</div>';
+  showScreen('screen-result');
+}
+
+function sendResultEmail(){
+  var info=archetypeInfo[topArchetype];
+  var status=document.getElementById('email-status');
+  status.className='email-status';
+  status.textContent='Enviando...';
+  status.style.display='block';
+
+  // ── EmailJS ────────────────────────────────────────────────────────────
+  // 1. Crea cuenta en emailjs.com (gratis hasta 200 emails/mes)
+  // 2. Conecta tu servicio de correo (Gmail, Outlook, etc.)
+  // 3. Crea un template con las variables de abajo
+  // 4. Reemplaza los tres valores PLACEHOLDER con tus IDs reales
+  var EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY';   // Account > API Keys
+  var EMAILJS_SERVICE_ID  = 'TU_SERVICE_ID';   // Email Services
+  var EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';  // Email Templates
+
+  emailjs.init({publicKey: EMAILJS_PUBLIC_KEY});
+
+  var params={
+    to_email:   userEmail,
+    brand_name: brandName,
+    archetype:  'The '+topArchetype,
+    archetype_aka: info.aka,
+    tagline:    info.tagline,
+    keywords:   info.keywords.join(', '),
+    desire:     info.desire,
+    goal:       info.goal,
+    fear:       info.fear,
+    connection: info.connection,
+    voice:      info.voice,
+    avoid:      info.avoid,
+    brands:     info.brands,
+    img_url:    info.img,
+    quiz_url:   window.location.href
+  };
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+    .then(function(){
+      status.className='email-status ok';
+      status.textContent='Resultado enviado a '+userEmail+'. Revisa tu bandeja de entrada.';
+    }, function(err){
+      status.className='email-status err';
+      status.textContent='No se pudo enviar el correo. Intenta de nuevo o contacta a Blumaa.';
+      console.error('EmailJS error:', err);
+    });
+}
+
+function restartQuiz(){
+  document.getElementById('brand-name-input').value='';
+  document.getElementById('start-btn').disabled=true;
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
