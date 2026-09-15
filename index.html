@@ -95,6 +95,16 @@
     margin-bottom: 0.75rem;
   }
 
+  /* Ambientación / marco sentence, shown before the question */
+  .q-intro {
+    font-family: 'Arsenal', sans-serif;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--muted);
+    margin-bottom: 0.85rem;
+  }
+
   /* Question text */
   .q-text {
     font-family: 'Instrument Serif', serif;
@@ -125,6 +135,31 @@
   }
   .option-btn:hover { background: var(--yellow); border-color: var(--orange); }
   .option-btn.selected { background: #EEF1FF; border: 2px solid var(--blue); color: #1a2d99; }
+
+  /* Options with a per-option image (Q13/Q14 look & feel) */
+  .options.options-visual { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .option-btn.has-image {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    flex: 1 1 calc(50% - 6px);
+    min-width: 150px;
+  }
+  .option-btn.has-image .option-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+  }
+  .option-btn.has-image .option-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .option-btn.has-image .radio-circle { margin-top: 0; }
 
   .radio-circle {
     flex-shrink: 0;
@@ -455,6 +490,7 @@
   <div class="screen" id="screen-quiz">
     <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
     <div class="q-label" id="q-label">Pregunta 1 de 24</div>
+    <div class="q-intro" id="q-intro" hidden></div>
     <div class="q-text" id="q-text"></div>
     <div class="options" id="options-list"></div>
     <div class="nav-row">
@@ -717,25 +753,28 @@ var archetypeInfo={
 
 var questions=[
   {
-    text:function(b){return 'Cuando alguien te pregunta "¿qué hace '+b+'?", ¿qué le dirías?'},
+    intro:null,
+    text:function(b){return 'Estás hablando con alguien que acabas de conocer y te pregunta sobre lo que hace '+b+'. ¿Qué le dirías?';},
     options:[
       {text:'Hacer que la gente se sienta bien. Que todo sea un poco más simple y más luminoso.',a:['Innocent']},
       {text:'Darle a las personas el conocimiento que necesitan para tomar mejores decisiones.',a:['Sage']},
-      {text:'Empujar a las personas a crecer y convertirse en su mejor versión.',a:['Hero']},
-      {text:'Crear cosas tan originales que no podrían venir de nadie más.',a:['Creator']}
+      {text:'Motivar a las personas a crecer y convertirse en su mejor versión.',a:['Hero']},
+      {text:'Crear cosas originales y tan únicas que no podrían venir de nadie más.',a:['Creator']}
     ]
   },
   {
-    text:function(b){return 'Imagina a alguien que acaba de tener su primera experiencia con '+b+'. ¿Cómo quieres que se sienta?'},
+    intro:null,
+    text:function(b){return '¿Cómo quieres que se sienta una persona que acaba de tener su primera experiencia con '+b+'?';},
     options:[
-      {text:'Cálido y cuidado. Como si alguien de verdad lo entendiera.',a:['Caregiver','Innocent']},
-      {text:'Emocionado e inspirado. Como si se le acabara de abrir un mundo nuevo.',a:['Explorer','Magician']},
-      {text:'Más inteligente y seguro. Como si acabara de subir de nivel.',a:['Sage']},
-      {text:'Lleno de energía y con ganas de más. Como si acabara de pasarla muy bien.',a:['Jester']}
+      {text:'Siente que alguien de verdad la entiende, siente calidez y se siente cuidada.',a:['Caregiver','Innocent']},
+      {text:'Emocionada e inspirada, acaba de descubrir un mundo nuevo.',a:['Explorer','Magician']},
+      {text:'Se siente más segura y confiada, acaba de subir de nivel.',a:['Sage']},
+      {text:'Llena de energía y con ganas de más, acaba de pasarla muy bien.',a:['Jester']}
     ]
   },
   {
-    text:function(b){return b+' llega a una fiesta. ¿A cuál de estos invitados se parece?'},
+    intro:function(b){return 'Quiero que pienses que '+b+' es una persona y acaba de llegar a una fiesta.';},
+    text:function(b){return '¿A cuál de estos invitados se parece?';},
     options:[
       {text:'Al que hace que todos se sientan incluidos y cómodos desde el primer momento.',a:['Everyman','Caregiver']},
       {text:'Al que tiene a todos a su alrededor, escuchando cada palabra que dice.',a:['Sage','Magician']},
@@ -744,7 +783,8 @@ var questions=[
     ]
   },
   {
-    text:function(b){return 'Cuando '+b+' está en su mejor momento, ¿qué le da a las personas que difícilmente van a encontrar en otro lugar?'},
+    intro:null,
+    text:function(b){return '¿Qué le das a las personas que no encuentran en ningún otro lado?';},
     options:[
       {text:'Una sensación real de pertenencia. Sienten que son parte de algo.',a:['Everyman']},
       {text:'El valor para hacer cosas que antes no se atrevían a intentar.',a:['Hero','Outlaw']},
@@ -753,34 +793,38 @@ var questions=[
     ]
   },
   {
-    text:function(b){return 'Lee estas frases. ¿Cuál suena más a '+b+'?'},
+    intro:function(b){return 'Ya tenemos la esencia de '+b+', ahora toca vamos a poner esto en palabras.';},
+    text:function(b){return 'Quiero que leas las siguientes frases y escojas la que mejor completa esta frase: '+b+'___';},
     options:[
-      {text:'"Hacemos que el día a día sea un poco más luminoso."',a:['Innocent','Jester']},
-      {text:'"Ayudamos a las personas a entender el mundo con más claridad."',a:['Sage']},
-      {text:'"Te acompañamos a convertirte en quien estás destinado a ser."',a:['Hero','Magician']},
-      {text:'"Venimos a cambiar las reglas. Y a hacer las cosas diferente."',a:['Outlaw','Creator']}
+      {text:'Hace que tu día a día sea un poco más luminoso.',a:['Innocent','Jester']},
+      {text:'Te ayuda a entender el mundo con más claridad.',a:['Sage']},
+      {text:'Te acompaña a convertirte en quien estás destinado a ser.',a:['Hero','Magician']},
+      {text:'Llega a cambiar las reglas y a hacer las cosas diferente.',a:['Outlaw','Creator']}
     ]
   },
   {
-    text:function(b){return 'Más frases. ¿Con cuál se identifica más '+b+'?'},
+    intro:null,
+    text:function(b){return 'Ahora quiero que leas las siguientes afirmaciones y escojas la que crees que '+b+' se identifica más:';},
     options:[
-      {text:'"Porque todos merecen sentirse cuidados."',a:['Caregiver']},
-      {text:'"Te llevamos a donde nunca has estado."',a:['Explorer']},
-      {text:'"Para los que solo quieren algo real."',a:['Everyman']},
-      {text:'"Ponemos el estándar que otros siguen."',a:['Ruler']}
+      {text:'"Todos merecen sentirse cuidados."',a:['Caregiver']},
+      {text:'"Te llevo a donde nunca has estado."',a:['Explorer']},
+      {text:'"Esta marca es para los que quieren algo real."',a:['Everyman']},
+      {text:'"Esta marca define los estándares que otras marcas siguen."',a:['Ruler']}
     ]
   },
   {
-    text:function(b){return 'Un cliente fiel le habla de '+b+' a un amigo. ¿Qué está diciendo?'},
+    intro:function(b){return 'Ponte en los zapatos de alguien que ya te conoce bien, alguien que te recomendaría sin pensarlo dos veces.';},
+    text:function(b){return 'Un cliente fiel le habla de '+b+' a un amigo, ¿Qué le dice?';},
     options:[
-      {text:'"De verdad saben lo que hacen. Les tengo una confianza total."',a:['Sage']},
-      {text:'"Siempre me hacen sentir bien. Cada vez que los uso."',a:['Innocent','Jester']},
-      {text:'"Se nota que les importa. Se siente en todo lo que hacen."',a:['Caregiver']},
+      {text:'"De verdad sabe lo que hace. Le tengo una confianza total."',a:['Sage']},
+      {text:'"Cada vez que interactúa con la marca, siempre me hace sentir bien."',a:['Innocent','Jester']},
+      {text:'"En todo lo que hace, se ve y siente la dedicación e importancia que le da."',a:['Caregiver']},
       {text:'"No hay nada igual en el mercado. Es completamente original."',a:['Creator','Outlaw']}
     ]
   },
   {
-    text:function(b){return 'Otro cliente fiel. Otra conversación. ¿Qué más podrían estar diciendo de '+b+'?'},
+    intro:null,
+    text:function(b){return 'Tenemos otro cliente fiel que también está hablando de '+b+'. ¿Qué podría estar diciendo de tu marca?';},
     options:[
       {text:'"Me empujó a hacer cosas que nunca pensé que podría."',a:['Hero','Explorer']},
       {text:'"Siento que fue hecho justo para personas como yo."',a:['Everyman','Lover']},
@@ -789,7 +833,8 @@ var questions=[
     ]
   },
   {
-    text:function(b){return '¿Qué definitivamente no es '+b+'?'},
+    intro:function(b){return 'A veces es más fácil empezar por lo que definitivamente no eres.';},
+    text:function(b){return '¿Qué definitivamente no es tu marca?';},
     options:[
       {text:'"Aburrida y predecible."',a:['Explorer','Outlaw','Creator']},
       {text:'"Fría y corporativa."',a:['Caregiver','Innocent','Everyman']},
@@ -798,79 +843,88 @@ var questions=[
     ]
   },
   {
-    text:function(b){return 'Cuando '+b+' habla, ¿cómo suena? Elige el estilo que más se le parece.'},
+    intro:null,
+    text:function(b){return 'Vamos ahora a encontrar el tono de voz de tu marca. De las siguientes frases quiero que elijas el estilo que más encaja con '+b+'.';},
     options:[
       {text:'Cálido y cercano. Como un mensaje de alguien que de verdad se preocupa por ti.',a:['Caregiver','Innocent','Everyman']},
-      {text:'Inteligente y claro. Primero los datos, sin relleno, siempre aprendes algo.',a:['Sage']},
-      {text:'Directo y contundente. Frases cortas, mucha energía, te dan ganas de actuar.',a:['Hero','Outlaw']},
+      {text:'Inteligente y claro. Primero van siempre los datos, siempre aprendes algo.',a:['Sage']},
+      {text:'Directo y contundente. Frases cortas, con mucha energía que te dan ganas de actuar.',a:['Hero','Outlaw']},
       {text:'Juguetón e ingenioso. Siempre un poco inesperado, te saca una sonrisa.',a:['Jester','Creator']}
     ]
   },
   {
-    text:function(b){return 'Una segunda mirada. ¿Cuál de estas otras formas de hablar también podría ser '+b+'?'},
+    intro:null,
+    text:function(b){return '¿Cuál de estas otras formas de hablar también podría ser '+b+'?';},
     options:[
-      {text:'Rico y poético. Palabras elegidas con cuidado, cada línea se siente intencional.',a:['Lover','Creator']},
+      {text:'Elegante y poético. Palabras elegidas con cuidado, cada línea se siente intencional.',a:['Lover','Creator']},
       {text:'Inspirador y visionario. Habla de grandes ideas y de lo que podría ser posible.',a:['Magician','Explorer']},
       {text:'Seguro y con autoridad. El tono de alguien que claramente sabe lo que hace.',a:['Ruler']},
       {text:'Real y con los pies en la tierra. Sin palabras rebuscadas, solo honesto y directo.',a:['Everyman','Outlaw']}
     ]
   },
   {
-    text:function(b){return 'Alguien está eligiendo entre '+b+' y otra opción. ¿Cuál es la razón real por la que elige '+b+'?'},
+    intro:function(b){return 'Piensa en una situación en la que alguien compara '+b+' con otra opción y aun así te elige a '+b+'.';},
+    text:function(b){return 'Alguien está eligiendo entre tu marca y otra opción. ¿Cuál es la razón real por la que te elige?';},
     options:[
-      {text:'Confían más. Se siente honesto y confiable.',a:['Sage','Everyman']},
-      {text:'Les hace sentir algo que los otros no logran.',a:['Lover','Magician','Innocent']},
-      {text:'Los empuja más fuerte y espera más de ellos.',a:['Hero']},
-      {text:'Se siente diferente. Más fresco, más atrevido, más vivo.',a:['Creator','Outlaw','Explorer']}
+      {text:'Confía más en tu marca, la siente honesta y transparente.',a:['Sage','Everyman']},
+      {text:'Tu marca le genera una sensación que otros no logran generar.',a:['Lover','Magician','Innocent']},
+      {text:'Siente que tu marca lo impulsa y motiva, lo hace creer que el cielo es el límite.',a:['Hero']},
+      {text:'Tu marca se siente diferente a las demás, se siente más fresca, más atrevida, más viva.',a:['Creator','Outlaw','Explorer']}
     ]
   },
   {
-    text:function(b){return 'Describe el look and feel de '+b+' en cuatro palabras. ¿Cuál grupo encaja mejor?'},
+    intro:function(b){return 'Cierra los ojos un segundo e imagina el color, la textura y el ambiente de '+b+'.';},
+    text:function(b){return 'Describe el look and feel de tu marca en cuatro palabras. ¿Cuál grupo encaja mejor?';},
     options:[
-      {text:'Suave, cálido, delicado, seguro.',a:['Innocent','Caregiver']},
-      {text:'Atrevido, fuerte, activo, preciso.',a:['Hero','Explorer']},
-      {text:'Lujoso, refinado, pulido, elegante.',a:['Ruler','Lover']},
-      {text:'Juguetón, brillante, colorido, divertido.',a:['Jester']}
+      {text:'Suave, cálido, delicado, seguro.',a:['Innocent','Caregiver'],img:'images/q13/opcion1-suave.png'},
+      {text:'Atrevido, fuerte, activo, preciso.',a:['Hero','Explorer'],img:'images/q13/opcion2-atrevido.png'},
+      {text:'Lujoso, refinado, pulido, elegante.',a:['Ruler','Lover'],img:'images/q13/opcion3-lujoso.png'},
+      {text:'Juguetón, brillante, colorido, divertido.',a:['Jester'],img:'images/q13/opcion4-jugueton.png'}
     ]
   },
   {
-    text:function(b){return 'Otra vuelta visual. ¿Cuál de estos grupos también podría ser '+b+'?'},
+    intro:function(b){return 'Quédate en esa misma imagen mental un momento más.';},
+    text:function(b){return 'Otra pregunta de look and feel: ¿Cuál de estos grupos también podría ser tu marca?';},
     options:[
-      {text:'Crudo, audaz, real, sin filtros.',a:['Outlaw']},
-      {text:'Minimalista, limpio, honesto, sin pretensiones.',a:['Everyman','Sage']},
-      {text:'Original, artístico, expresivo, único.',a:['Creator']},
-      {text:'Mágico, cinematográfico, onírico, envolvente.',a:['Magician']}
+      {text:'Crudo, audaz, real, sin filtros.',a:['Outlaw'],img:'images/q14/opcion1-crudo.png'},
+      {text:'Minimalista, limpio, honesto, sin pretensiones.',a:['Everyman','Sage'],img:'images/q14/opcion2-minimalista.png'},
+      {text:'Original, artístico, expresivo, único.',a:['Creator'],img:'images/q14/opcion3-original.png'},
+      {text:'Mágico, cinematográfico, onírico, envolvente.',a:['Magician'],img:'images/q14/opcion4-magico.png'}
     ]
   },
   {
-    text:function(b){return 'Piensa en lo que vende '+b+'. ¿Por qué pagan de verdad las personas?'},
+    intro:function(b){return 'Ahora toca pensar en por qué las personas realmente te eligen.';},
+    text:function(b){return 'Piensa en lo que ofrece tu marca. ¿Por qué pagan de verdad las personas que escogen tu marca?';},
     options:[
       {text:'Tranquilidad. El alivio de saber que están en buenas manos.',a:['Caregiver','Innocent']},
-      {text:'Un atajo para ser más inteligente o estar mejor informado.',a:['Sage']},
+      {text:'Un atajo para ser más estratégico o estar mejor informado.',a:['Sage']},
       {text:'La emoción de algo nuevo, una experiencia fresca o una aventura.',a:['Explorer']},
       {text:'Algo que les ayuda a destacar y expresar quiénes son.',a:['Creator','Outlaw']}
     ]
   },
   {
-    text:function(b){return '¿Qué otra cosa están comprando, en el fondo, cuando eligen '+b+'?'},
+    intro:function(b){return 'Vamos a ir un paso más profundo: debajo de esa razón, ¿qué hay?';},
+    text:function(b){return 'Si vamos un poco más al fondo de esa decisión, ¿Qué más están comprando cuando eligen tu marca?';},
     options:[
       {text:'Una transformación real. Quieren salir del otro lado siendo diferentes.',a:['Magician','Hero']},
-      {text:'Alegría pura. Solo quieren sonreír y sentirse bien.',a:['Jester','Innocent']},
+      {text:'Alegría pura. Quieren sonreír y sentirse bien.',a:['Jester','Innocent']},
       {text:'Estatus y calidad. Quieren lo mejor y lo saben.',a:['Ruler']},
       {text:'Conexión. Quieren sentir que alguien los entiende de verdad.',a:['Lover','Everyman']}
     ]
   },
   {
-    text:function(b){return b+' está a punto de lanzar algo nuevo. ¿Qué pregunta guía esa decisión?'},
+    intro:function(b){return 'Antes de que exista algo nuevo con tu nombre, siempre hay una pregunta que te haces primero.';},
+    text:function(b){return 'Piensa en el momento en el que estás creando o construyendo el producto o oferta de tu marca para tus clientes, ¿Cuál es la pregunta principal que te preguntas?';},
     options:[
-      {text:'"¿Esto hará la vida de nuestros clientes más simple y más alegre?"',a:['Innocent','Caregiver']},
-      {text:'"¿Es esto lo más preciso y confiable que podemos ofrecer?"',a:['Sage']},
+      {text:'"¿Esto hará la vida de mis clientes más simple y más alegre?"',a:['Innocent','Caregiver']},
+      {text:'"¿Es esto lo más preciso y confiable que puedo ofrecer?"',a:['Sage']},
       {text:'"¿Esto lleva a las personas más lejos de lo que han llegado antes?"',a:['Hero','Explorer']},
       {text:'"¿Alguien ha hecho algo remotamente parecido a esto antes?"',a:['Creator','Outlaw','Magician']}
     ]
   },
   {
-    text:function(b){return b+' lanza una campaña. ¿Cuál de estos mensajes encaja más con '+b+'?'},
+    intro:function(b){return 'Imagina el primer anuncio que lanzarías si el presupuesto no fuera un problema.';},
+    text:function(b){return 'Tu marca lanza una campaña. ¿Cuál de estos mensajes encaja más?';},
     options:[
       {text:'"La vida está bien. Aquí tu recordatorio para que la disfrutes."',a:['Innocent','Jester']},
       {text:'"Esto es lo que la mayoría no sabe, pero tú deberías saber."',a:['Sage']},
@@ -879,34 +933,38 @@ var questions=[
     ]
   },
   {
-    text:function(b){return 'Otra campaña. Otro mensaje posible. ¿Cuál suena más a '+b+'?'},
+    intro:function(b){return 'Otra idea de campaña, para confirmar el patrón.';},
+    text:function(b){return 'Otra campaña. Otro mensaje posible. ¿Cuál suena más a tu marca?';},
     options:[
-      {text:'"Imagina cómo podría verse tu vida. Ahora vamos a construirla."',a:['Magician']},
+      {text:'"Imagina cómo podría verse tu vida. Ahora la construyo contigo."',a:['Magician']},
       {text:'"Hecho para personas reales. Sin pretensiones, sin relleno."',a:['Everyman']},
       {text:'"Porque mereces sentirte cuidado."',a:['Caregiver']},
-      {text:'"Ve a donde nunca has ido. Aquí te mostramos el camino."',a:['Explorer']}
+      {text:'"Ve a donde nunca has ido. Aquí te muestro el camino."',a:['Explorer']}
     ]
   },
   {
-    text:function(b){return '¿Qué resultado haría que el equipo detrás de '+b+' se sintiera genuinamente orgulloso?'},
+    intro:function(b){return 'Última parte: toca hablar de tu equipo, hacia dónde vas y quién eres en el fondo. Cambia de lado del mostrador un momento, piensa puertas adentro.';},
+    text:function(b){return '¿Qué resultado te haría sentir genuinamente orgullosa detrás de tu marca?';},
     options:[
       {text:'Ver que los clientes vuelven una y otra vez con una gran sonrisa.',a:['Innocent','Jester','Caregiver']},
-      {text:'Ser reconocido como el nombre más confiable y creíble del sector.',a:['Sage','Ruler']},
+      {text:'Ser reconocida como el nombre más confiable y creíble del sector.',a:['Sage','Ruler']},
       {text:'Que un cliente diga "esta marca cambió mi vida".',a:['Magician','Hero']},
       {text:'Crear algo tan original que los competidores no puedan copiarlo.',a:['Creator']}
     ]
   },
   {
-    text:function(b){return 'Imagina '+b+' en 5 años. ¿Cómo se ve el éxito?'},
+    intro:function(b){return 'Avanza cinco años en el tiempo y mira hacia atrás.';},
+    text:function(b){return 'Imagina tu marca en 5 años. ¿Cómo se ve el éxito?';},
     options:[
-      {text:'Millones de personas que se sienten un poco más felices gracias a nosotros.',a:['Innocent','Caregiver','Jester']},
+      {text:'Millones de personas que se sienten un poco más felices gracias a ti.',a:['Innocent','Caregiver','Jester']},
       {text:'Ser la referencia definitiva en la que todos confían.',a:['Sage','Ruler']},
       {text:'Haber encendido un movimiento o cambiado cómo funciona una industria.',a:['Outlaw','Magician','Explorer']},
       {text:'Un legado de trabajo tan bueno que se sigue mencionando y admirando.',a:['Creator','Hero']}
     ]
   },
   {
-    text:function(b){return '¿Cuál de estas marcas se siente como una prima cercana de '+b+'?'},
+    intro:function(b){return 'Piensa en marcas que ya conoces bien, no en la tuya: solo en cómo te hacen sentir cuando las ves.';},
+    text:function(b){return '¿Cuál de estas marcas se siente como una prima cercana de la tuya?';},
     options:[
       {text:'Coca-Cola o Dove: cálidas, optimistas, que hacen sentir bien.',a:['Innocent','Caregiver']},
       {text:'Nike o Cruz Roja: con propósito claro, que empoderan.',a:['Hero']},
@@ -915,7 +973,8 @@ var questions=[
     ]
   },
   {
-    text:function(b){return '¿Y cuál de estas otras también podría serlo?'},
+    intro:function(b){return 'Una comparación más, por si la anterior se quedó corta.';},
+    text:function(b){return '¿Y cuál de estas otras también podría serlo?';},
     options:[
       {text:'Disney o TED: visionarias, inspiradoras, transformadoras.',a:['Magician']},
       {text:'IKEA o Target: amigables, accesibles, sin pretensiones.',a:['Everyman']},
@@ -924,7 +983,8 @@ var questions=[
     ]
   },
   {
-    text:function(b){return 'Última pregunta. Si '+b+' fuera una persona, ¿qué diría la gente siempre de ella?'},
+    intro:function(b){return 'Última pregunta. Imagina que puedes escuchar lo que la gente dice de tu marca cuando no estás presente.';},
+    text:function(b){return '¿Qué dirían siempre de ella?';},
     options:[
       {text:'"Siempre sabe cómo hacerte sentir mejor."',a:['Caregiver','Innocent']},
       {text:'"Te desafía y te hace querer ser mejor."',a:['Hero','Sage']},
@@ -980,13 +1040,26 @@ function showScreen(id){
 function renderQuestion(){
   var q=questions[currentQ];
   document.getElementById('q-label').textContent='Pregunta '+(currentQ+1)+' de '+questions.length;
+  var introEl=document.getElementById('q-intro');
+  var introText=q.intro?q.intro(brandName):'';
+  introEl.textContent=introText;
+  introEl.hidden=!introText;
   document.getElementById('q-text').textContent=q.text(brandName);
   document.getElementById('progress-bar').style.width=(currentQ/questions.length*100)+'%';
+  var hasImages=q.options.some(function(o){return !!o.img;});
   var list=document.getElementById('options-list'); list.innerHTML='';
+  list.className='options'+(hasImages?' options-visual':'');
   q.options.forEach(function(opt,i){
     var btn=document.createElement('button');
-    btn.className='option-btn'+(answers[currentQ]===i?' selected':'');
-    btn.innerHTML='<span class="radio-circle"><span class="checkmark"></span></span><span class="option-label">'+opt.text+'</span>';
+    var selected=answers[currentQ]===i;
+    if(opt.img){
+      btn.className='option-btn has-image'+(selected?' selected':'');
+      btn.innerHTML='<img class="option-img" src="'+opt.img+'" alt="">'+
+        '<span class="option-body"><span class="radio-circle"><span class="checkmark"></span></span><span class="option-label">'+opt.text+'</span></span>';
+    } else {
+      btn.className='option-btn'+(selected?' selected':'');
+      btn.innerHTML='<span class="radio-circle"><span class="checkmark"></span></span><span class="option-label">'+opt.text+'</span>';
+    }
     btn.onclick=function(){selectOption(i);};
     list.appendChild(btn);
   });
@@ -1001,7 +1074,8 @@ function renderQuestion(){
 function selectOption(i){
   answers[currentQ]=i;
   document.querySelectorAll('.option-btn').forEach(function(btn,idx){
-    btn.className='option-btn'+(idx===i?' selected':'');
+    var base='option-btn'+(btn.classList.contains('has-image')?' has-image':'');
+    btn.className=base+(idx===i?' selected':'');
   });
   document.getElementById('next-btn').disabled=false;
   document.getElementById('hint-text').textContent='';
