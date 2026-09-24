@@ -286,9 +286,9 @@
   .result-keywords { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0.25rem; }
   .result-keyword { background: var(--pool); color: #0d3a5c; font-size: 13px; padding: 5px 14px; border-radius: 99px; font-family: 'DM Sans', sans-serif; }
   .result-connection { font-size: 15px; color: var(--mid); line-height: 1.65; padding: 16px 20px; background: var(--crema); border-radius: 8px; border-left: 3px solid var(--blue); border-top-left-radius: 0; border-bottom-left-radius: 0; margin-bottom: 0.25rem; }
-  .result-bullets { list-style: none; margin: 0 0 0.25rem; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-  .result-bullets li { font-size: 14px; color: var(--dark); line-height: 1.5; padding-left: 18px; position: relative; }
-  .result-bullets li::before { content: '✦'; position: absolute; left: 0; top: 0; color: var(--blue); font-size: 10px; }
+  .result-deep-box { background: var(--yellow); border-radius: 8px; padding: 16px 20px; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 10px; }
+  .result-deep-box .result-deep-item { font-size: 14px; color: var(--dark); line-height: 1.45; padding-left: 20px; position: relative; }
+  .result-deep-box .result-deep-item::before { content: '✦'; position: absolute; left: 0; top: 2px; color: var(--blue); font-size: 10px; }
 
 
   .result-actions { display: flex; gap: 12px; margin-top: 1.25rem; flex-wrap: wrap; }
@@ -397,6 +397,7 @@
   }
   .result-field-value { font-size: 14px; color: var(--dark); line-height: 1.4; }
   .result-field.full { grid-column: 1 / -1; }
+  .result-field.yellow { background: var(--yellow); }
 
   .runner-up {
     background: var(--crema);
@@ -1497,7 +1498,9 @@ function buildResultCardHtml(sorted, scores){
   var ruKeywordsHtml=ruInfo.keywords.map(function(k){return '<span class="result-keyword">'+k+'</span>';}).join('');
   var deep=archetypeDeep[topArchetype];
   var ruDeep=archetypeDeep[runnerUp];
-  function bulletsHtml(arr){ return '<ul class="result-bullets">'+arr.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'; }
+  function bulletsHtml(arr){
+    return '<div class="result-deep-box">'+arr.map(function(x){return '<div class="result-deep-item">'+x+'</div>';}).join('')+'</div>';
+  }
   var starSvg='<img class="result-star-svg" src="data:image/png;base64,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" alt="">';
   return '<div class="result-hero"><img src="'+info.img+'" alt="'+topArchetype+'" loading="lazy"></div>'+
     starSvg+
@@ -1519,10 +1522,10 @@ function buildResultCardHtml(sorted, scores){
     '<div class="result-connection">'+info.connection+'</div>'+
     '<div class="result-section-header">Hace sentir a tu audiencia</div>'+
     '<div class="result-feel"><p class="result-feel-value">'+info.makeFeel+'</p></div>'+
-    '<div class="result-section-header">Voz, tono y referencias</div>'+
+    '<div class="result-section-header">Voz, tono y contenido</div>'+
     '<div class="result-grid">'+
-      '<div class="result-field full"><div class="result-field-label">Estilo de comunicación</div><div class="result-field-value">'+info.voice+'</div></div>'+
-      '<div class="result-field full"><div class="result-field-label">Qué evitar</div><div class="result-field-value">'+info.avoid+'</div></div>'+
+      '<div class="result-field full yellow"><div class="result-field-label">Estilo de comunicación</div><div class="result-field-value">'+info.voice+'</div></div>'+
+      '<div class="result-field full yellow"><div class="result-field-label">Qué evitar</div><div class="result-field-value">'+info.avoid+'</div></div>'+
     '</div>'+
     '<div class="result-section-header">Lo que le importa a tu marca</div>'+
     bulletsHtml(deep.matters)+
@@ -1551,10 +1554,10 @@ function buildResultCardHtml(sorted, scores){
     '<div class="result-connection">'+ruInfo.connection+'</div>'+
     '<div class="result-section-header">Hace sentir a tu audiencia</div>'+
     '<div class="result-feel"><p class="result-feel-value">'+ruInfo.makeFeel+'</p></div>'+
-    '<div class="result-section-header">Voz, tono y referencias</div>'+
+    '<div class="result-section-header">Voz, tono y contenido</div>'+
     '<div class="result-grid">'+
-      '<div class="result-field full"><div class="result-field-label">Estilo de comunicación</div><div class="result-field-value">'+ruInfo.voice+'</div></div>'+
-      '<div class="result-field full"><div class="result-field-label">Qué evitar</div><div class="result-field-value">'+ruInfo.avoid+'</div></div>'+
+      '<div class="result-field full yellow"><div class="result-field-label">Estilo de comunicación</div><div class="result-field-value">'+ruInfo.voice+'</div></div>'+
+      '<div class="result-field full yellow"><div class="result-field-label">Qué evitar</div><div class="result-field-value">'+ruInfo.avoid+'</div></div>'+
     '</div>'+
     '<div class="result-section-header">Lo que le importa a tu marca</div>'+
     bulletsHtml(ruDeep.matters)+
